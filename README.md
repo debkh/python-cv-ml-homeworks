@@ -4,8 +4,9 @@ Welcome to my playground for the Python Computer Vision and Machine Learning cou
 
 ## 📁 Project Layout
 
-- `data/lesson_1/` – raw assets used inside the notebooks.
+- `data/` – sample images and datasets for assignments.
 - `notebooks/lesson_1/main.ipynb` – primary notebook for lesson one explorations.
+- `notebooks/lesson_2/homework.ipynb` – homework solutions for lesson #2.
 - `src/` – lightweight scripts (e.g., `main.py`) for quick experiments or utilities.
 - `requirements.txt` – pinned dependencies for the course assignments.
 
