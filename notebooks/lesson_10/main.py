@@ -34,18 +34,23 @@ def main(tracker_type: str = "KCF"):
     if cascade.empty():
         raise RuntimeError("Error loading cars.xml cascade")
 
+    # Calculate delay based on video FPS to maintain real-time playback
     fps = video_capture.get(cv2.CAP_PROP_FPS)
+    # Use a default frame duration of 1/30 seconds if FPS is not available or invalid
     frame_duration = 1.0 / fps if fps and fps > 0 else 1.0 / 30.0
+    # Ensure a minimum delay of 1 ms to avoid issues with very high FPS videos
     delay_ms = max(1, int(frame_duration * 1000))
 
     ret, first_frame = video_capture.read()
     if not ret:
         raise RuntimeError("Failed to read first frame")
 
+    # Detect the largest car in the first frame to initialize the tracker
     first_bbox = detect_largest_car(first_frame, cascade)
     if first_bbox is None:
         raise RuntimeError("No cars detected in the first frame")
 
+    # Initialize the tracker with the first frame and the detected bounding box
     if tracker_type == "KCF":
         tracker = cv2.TrackerKCF_create()
     elif tracker_type == "CSRT":
@@ -64,6 +69,7 @@ def main(tracker_type: str = "KCF"):
 
         success, bbox = tracker.update(frame)
 
+        # Redetect if tracking failed or every REDETECT_FRAMES_PERIOD frames
         if not success or (frame_index % REDETECT_FRAMES_PERIOD == 0):
             redetect_bbox = detect_largest_car(frame, cascade)
             if redetect_bbox is not None:
@@ -76,6 +82,7 @@ def main(tracker_type: str = "KCF"):
                 success = True
                 redetected_count += 1
 
+        # Draw bounding box and info on the frame
         if success:
             x, y, w, h = map(int, bbox)
             cv2.rectangle(frame, (x, y), (x + w, y + h), COLOR_GREEN, 2)
